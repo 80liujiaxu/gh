@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.demo.mapper.UserMapper">
+<resultMap type="com.example.demo.dto.Xq"  id="xq">    
+	<id column="hid" property="hid"/>
+	<result column="bname" property="bname"/>
+	<result column="sex" property="sex"/> 
+	<result column="status" property="status"/>
+	<result column="g_date" property="g_date"/>
+	<result column="g_time" property="g_time"/>
+	<result column="dh" property="dh"/>
+	<association property="kx" javaType="com.example.demo.dto.KX">
+		<id column="kid" property="kid"/> 
+		<result column="kname" property="kname"/>
+		<collection property="wy" ofType="com.example.demo.dto.Wy">
+			<id column="yid" property="yid"/>
+			<result column="yname" property="yname"/>
+			<result column="price" property="price"/>
+		</collection>
+	</association>
+	<association property="wy" javaType="com.example.demo.dto.Wy">
+			<id column="yid" property="yid"/>
+			<result column="yname" property="yname"/>
+			<result column="price" property="price"/>
+	</association>
+</resultMap>
+
+<select id="getXq" resultMap="xq">
+	select * from ghxq g left join gk k on g.kid=k.kid 
+	left join wy y on k.kid=y.kid
+</select>
+<select id="getGhxq" resultMap="xq">
+	select * from (select * from ghxq <if test="mohu!=null">
+	where dh like '%${mohu}%'
+	</if> limit #{offset},#{pageSize})g left join gk k on g.kid=k.kid 
+	left join wy y on k.kid=y.kid
+</select>
+<select id="getCount" resultType="long">
+	select count(hid) from ghxq
+	<if test="mohu!=null">
+	where dh like '%${mohu}%'
+	</if>
+</select>
+</mapper>
